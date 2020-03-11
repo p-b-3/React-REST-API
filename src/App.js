@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import Conferences from "./Conferences";
+import ConferenceDetail from "./ConferenceDetail";
+import axios from "axios";
+import { BrowserRouter, Route } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {
+    conferenceList: []
+  };
+
+  componentDidMount() {
+    this.fechConferences();
+  }
+
+  fechConferences = async () => {
+    const res = await axios.get("http://127.0.0.1:8000/events/?format=json");
+    this.setState({ conferenceList: res.data });
+    console.log(this.state);
+  };
+
+  render() {
+    return (
+      <div className="container">
+        <BrowserRouter>
+          <div classname="container">
+            <Route
+              path="/conferences"
+              render={routeProps => (
+                <Conferences
+                  {...routeProps}
+                  conferenceList={this.state.conferenceList}
+                />
+              )}
+            />
+            <Route path="/conferences/:id" component={ConferenceDetail} />
+          </div>
+        </BrowserRouter>
+      </div>
+    );
+  }
 }
 
 export default App;
